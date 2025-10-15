@@ -1,0 +1,115 @@
+
+CREATE DATABASE final_db;
+USE final_db;
+
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `fullname` varchar(100) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `country` varchar(50) DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+);
+
+-- Insert users
+INSERT INTO users (fullname, username, email, phone, country, password) VALUES
+('John Doe', 'johndoe', 'john@example.com', '1234567890', 'USA', 'hashed_password1'),
+('Jane Smith', 'janesmith', 'jane@example.com', '9876543210', 'UK', 'hashed_password2');
+
+CREATE TABLE `userloginlogs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL,
+  `login_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `admin` (
+  `admin_id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `position` varchar(50) NOT NULL,
+  PRIMARY KEY (`admin_id`)
+);
+
+-- Insert admins
+INSERT INTO admin (email, password, position) VALUES
+('admin1@example.com', 'adminpass1', 'BookingAdmin'),
+('admin2@example.com', 'adminpass2', 'User_Admin'),
+('admin3@example.com', 'adminpass3', 'Bus_Operator');
+
+
+CREATE TABLE `route` (
+  `route_id` int NOT NULL AUTO_INCREMENT,
+  `source` varchar(100) DEFAULT NULL,
+  `destination` varchar(100) DEFAULT NULL,
+  `travel_date` date DEFAULT NULL,
+  PRIMARY KEY (`route_id`)
+);
+
+-- Insert routes
+INSERT INTO route (source, destination, travel_date) VALUES
+('Colombo', 'Kandy', '2025-05-25'),
+('Galle', 'Jaffna', '2025-05-26');
+
+
+CREATE TABLE `bus` (
+  `bus_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `route_id` int DEFAULT NULL,
+  `departure_time` time DEFAULT NULL,
+  `arivel_time` time DEFAULT NULL,
+  `seat_count` int DEFAULT NULL,
+  PRIMARY KEY (`bus_id`),
+  KEY `route_id` (`route_id`),
+  CONSTRAINT `bus_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `route` (`route_id`)
+);
+
+-- Insert buses (route_id must match inserted routes)
+INSERT INTO bus (name, type, route_id, departure_time, arivel_time, seat_count) VALUES
+('Super Express', 'AC', 1, '08:00:00', '11:00:00', 40),
+('Mega Travels', 'Non-AC', 2, '09:00:00', '17:00:00', 45);
+
+
+CREATE TABLE `seat` (
+  `seat_id` int NOT NULL AUTO_INCREMENT,
+  `seat_number` varchar(10) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'available',
+  `bus_id` int NOT NULL,
+  `price` double DEFAULT NULL,
+  PRIMARY KEY (`seat_id`),
+  KEY `bus_id` (`bus_id`),
+  CONSTRAINT `seat_ibfk_1` FOREIGN KEY (`bus_id`) REFERENCES `bus` (`bus_id`) ON DELETE CASCADE
+);
+
+-- Insert seats for bus 1
+INSERT INTO seat (seat_number, status, bus_id, price) VALUES
+('A1', 'available', 1, 1000),
+('A2', 'booked', 1, 1000),
+('B1', 'available', 1, 1000);
+
+-- Insert seats for bus 2
+INSERT INTO seat (seat_number, status, bus_id, price) VALUES
+('A1', 'available', 2, 800),
+('A2', 'available', 2, 800);
+
+
+CREATE TABLE `ticket` (
+  `ticket_id` int NOT NULL AUTO_INCREMENT,
+  `fullname` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `seat_numbers` varchar(255) DEFAULT NULL,
+  `total_price` double DEFAULT NULL,
+  `bus_id` int DEFAULT NULL,
+  PRIMARY KEY (`ticket_id`)
+);
+
+-- Insert tickets
+INSERT INTO ticket (fullname, email, seat_numbers, total_price, bus_id) VALUES
+('John Doe', 'john@example.com', 'A2', 1000, 1),
+('Jane Smith', 'jane@example.com', 'A1,A2', 1600, 2);

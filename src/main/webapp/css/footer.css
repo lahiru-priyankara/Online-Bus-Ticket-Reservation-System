@@ -1,0 +1,11 @@
+.footer {
+    background: #2c3e50;
+    color: #ffffff;
+    padding: 20px;
+    margin-top: 40px;
+}
+
+.footer-logo img {
+    height: 30px;
+    margin-bottom: 10px;
+}
